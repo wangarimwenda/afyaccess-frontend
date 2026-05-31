@@ -12,7 +12,8 @@ function App() {
     {id:1, product:"Albendazole Suspension", form:"Oral Suspension", route:"Oral", therapeutic:"Antinematodal Anthelmintic Agents", inn:"Albendazole", price:280},
     {id:2, product:"Aspirin Tablets", form:"Tablet", route:"Oral", therapeutic:"Analgesics & Antipyretics", inn:"Acetylsalicylic Acid", price:120},
     {id:3, product:"Lonart Forte Tablet", form:"Tablet", route:"Oral", therapeutic:"Antimalarial Antiprotozoals", inn:"Artemether + Lumefantrine", price:450},
-    {id:647, product:"Mamalait Granules 250g", form:"Granules", route:"Oral", therapeutic:"Supplement", inn:"", price:2200}
+    {id:647, product:"Mamalait Granules 250g", form:"Granules", route:"Oral", therapeutic:"Supplement", inn:"", price:2200},
+    
   ];
 
   useEffect(() => {
