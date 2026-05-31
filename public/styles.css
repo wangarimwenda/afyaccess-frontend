@@ -202,17 +202,16 @@ select {
 
 /* ================= PAGE SYSTEM (FIXED) ================= */
 .page {
-    display: none;
-    min-height: 100vh;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transform: translateY(20px);
+    transition: all 0.4s ease;
 }
+
 
 .page.active {
-    display: block;
     opacity: 1;
+    transform: translateY(0);
 }
-
 /* ================= NAV LINKS ================= */
 nav a {
     padding: 10px 15px;
