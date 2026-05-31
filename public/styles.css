@@ -201,16 +201,21 @@ select {
 }
 
 /* ================= PAGE SYSTEM (FIXED) ================= */
-.page {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.4s ease;
+
+    .page {
+    min-height: 100vh;
+    display: none;
+    overflow: hidden;
+        opacity: 0;
+
 }
+
 
 
 .page.active {
     opacity: 1;
     transform: translateY(0);
+    display: block;
 }
 /* ================= NAV LINKS ================= */
 nav a {
@@ -224,4 +229,8 @@ nav a.active {
     background: rgba(255,255,255,0.3);
     border-radius: 8px;
     font-weight: bold;
+}
+html, body {
+    height: 100%;
+    overflow-x: hidden;
 }

@@ -471,6 +471,30 @@ function forgotPassword() {
 function saveCart() {
     localStorage.setItem(getCartKey(), JSON.stringify(cart));
 }
+/*function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+    });
+
+    document.getElementById(pageId).classList.add('active');
+
+    // 🔥 FIX: always reset scroll to top
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+} */
+
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(page => {
+        page.style.display = "none";
+    });
+
+    const activePage = document.getElementById(pageId);
+    activePage.style.display = "block";
+
+    window.scrollTo(0, 0);
+}
 
 function updateCartCount() {
     const count = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
