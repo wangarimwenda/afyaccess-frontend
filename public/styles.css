@@ -1,20 +1,27 @@
 :root {
     --primary: #1e40af;
     --accent: #10b981;
-    --danger: #d9534f;
     --bg: #f8fafc;
     --text: #1e2937;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* ================= GLOBAL RESET ================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
+/* ================= BODY ================= */
 body {
     font-family: 'Segoe UI', Arial, sans-serif;
     background: var(--bg);
     color: var(--text);
     line-height: 1.6;
+    overflow-x: hidden;
 }
 
+/* ================= HEADER ================= */
 header {
     background: var(--primary);
     color: white;
@@ -34,30 +41,15 @@ header {
     padding: 0 1.5rem;
 }
 
-.logo { font-size: 2.4rem; font-weight: bold; }
-
-nav a {
-    padding: 10px 15px;
-    color: white;
-    text-decoration: none;
+.logo {
+    font-size: 2.4rem;
+    font-weight: bold;
 }
 
-.user-section {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-#user-info { cursor: pointer; font-weight: 500; }
-
-.cart-icon { cursor: pointer; font-size: 1.8rem; }
-
-/* Pages */
-.page { display: none; min-height: 100vh; }
-.page.active { display: block; }
-
+/* ================= HERO ================= */
 .hero {
-    background: linear-gradient(rgba(30,64,175,0.9), rgba(30,64,175,0.9)), url('https://picsum.photos/id/1015/2000/800') center/cover;
+    background: linear-gradient(rgba(30,64,175,0.9), rgba(30,64,175,0.9)),
+    url('https://picsum.photos/id/1015/2000/800') center/cover;
     color: white;
     padding: 5rem 1rem;
     text-align: center;
@@ -67,6 +59,7 @@ nav a {
     justify-content: center;
 }
 
+/* ================= BUTTONS ================= */
 .start-btn {
     padding: 18px 40px;
     font-size: 1.5rem;
@@ -75,10 +68,21 @@ nav a {
     border: none;
     border-radius: 50px;
     cursor: pointer;
+    transition: 0.3s ease;
 }
 
-.container { max-width: 1280px; margin: 2rem auto; padding: 1.5rem; }
+.start-btn:hover {
+    transform: scale(1.05);
+}
 
+/* ================= CONTAINER ================= */
+.container {
+    max-width: 1280px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+}
+
+/* ================= CONTROLS ================= */
 .controls {
     display: flex;
     gap: 1rem;
@@ -86,7 +90,8 @@ nav a {
     flex-wrap: wrap;
 }
 
-.controls input, .controls select {
+input,
+select {
     padding: 16px;
     border-radius: 8px;
     border: 1px solid #ccc;
@@ -94,23 +99,28 @@ nav a {
     min-width: 300px;
 }
 
+/* ================= PRODUCT GRID ================= */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.8rem;
 }
 
+/* ================= PRODUCT CARD ================= */
 .product-card {
     background: white;
     border-radius: 12px;
     padding: 1.4rem;
     box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-    transition: 0.3s;
+    transition: 0.3s ease;
 }
 
-.product-card:hover { transform: translateY(-8px); }
+.product-card:hover {
+    transform: translateY(-8px);
+}
 
-.add-btn, .checkout-btn {
+/* ================= BUTTONS ================= */
+.add-btn {
     background: var(--accent);
     color: white;
     border: none;
@@ -122,6 +132,18 @@ nav a {
     margin-top: 10px;
 }
 
+.checkout-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 16px;
+    font-size: 1.2rem;
+    border-radius: 8px;
+    width: 100%;
+    cursor: pointer;
+}
+
+/* ================= CART ================= */
 .cart-item {
     display: flex;
     justify-content: space-between;
@@ -139,81 +161,76 @@ nav a {
     margin: 2rem 0;
 }
 
-/* Modals */
-.modal, .panic-modal {
+/* ================= MODAL ================= */
+.modal {
     display: none;
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.75);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
     z-index: 2000;
     align-items: center;
     justify-content: center;
 }
 
-.modal-content, .panic-content {
+.modal-content {
     background: white;
     padding: 2rem;
     border-radius: 12px;
     width: 90%;
-    max-width: 420px;
+    max-width: 400px;
     text-align: center;
 }
 
-.modal-content input, .panic-content input {
+.modal-content input {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
     margin: 10px 0;
-    border: 2px solid #ddd;
+    border: 1px solid #ccc;
     border-radius: 8px;
 }
 
-/* Panic Button */
-#panic-float {
-    position: fixed;
-    bottom: 25px;
-    right: 25px;
-    background: var(--danger);
-    color: white;
+.close-btn {
+    background: none;
     border: none;
-    border-radius: 50%;
-    width: 75px;
-    height: 75px;
-    font-size: 2rem;
+    color: #e11d48;
     cursor: pointer;
-    box-shadow: 0 6px 20px rgba(217, 83, 79, 0.7);
-    z-index: 9999;
-    transition: all 0.3s;
+    margin-top: 10px;
 }
 
-#panic-float:hover {
-    transform: scale(1.15);
-    background: #c9302c;
+/* ================= PAGE SYSTEM (FIXED) ================= */
+
+    .page {
+    min-height: 100vh;
+    display: none;
+    overflow: hidden;
+        opacity: 0;
+
 }
 
-.panic-send-btn {
-    background: var(--danger);
+
+
+.page.active {
+    opacity: 1;
+    transform: translateY(0);
+    display: block;
+}
+/* ================= NAV LINKS ================= */
+nav a {
+    padding: 10px 15px;
+    text-decoration: none;
     color: white;
-    padding: 16px 32px;
-    border: none;
+    transition: 0.3s;
+}
+
+nav a.active {
+    background: rgba(255,255,255,0.3);
     border-radius: 8px;
-    font-size: 1.1rem;
-    margin: 10px 5px;
-    cursor: pointer;
+    font-weight: bold;
 }
-
-.cancel-btn {
-    background: #6c757d;
-    color: white;
-    padding: 16px 28px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-#panicMap {
-    height: 280px;
-    margin: 15px 0;
-    border-radius: 10px;
-    border: 2px solid #ddd;
+html, body {
+    height: 100%;
+    overflow-x: hidden;
 }

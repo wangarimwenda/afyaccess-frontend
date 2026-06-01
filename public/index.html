@@ -6,12 +6,8 @@
     <title>AfyAccess - Kenya Online Pharmacy</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
-    
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
-
     <header>
         <div class="nav">
             <div class="logo">AfyAccess</div>
@@ -20,21 +16,18 @@
                 <a href="#" onclick="showPage('shop')">Shop</a>
                 <a href="#" onclick="showPage('cart')">Cart (<span id="cart-count-header">0</span>)</a>
             </nav>
-            <div class="user-section">
-                <span onclick="handleUserClick()" id="user-info">Login</span>
-                <div onclick="showPage('cart')" class="cart-icon">🛒 <span id="cart-count">0</span></div>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <span onclick="handleUserClick()" style="cursor:pointer; font-weight:500;" id="user-info">Login</span>
+                <div onclick="showPage('cart')" style="cursor:pointer; font-size:1.8rem;">🛒 <span id="cart-count">0</span></div>
             </div>
         </div>
     </header>
 
-    <!-- HOME PAGE -->
     <div id="home" class="page active hero">
         <h1>Your Health, Delivered Fast Across Kenya</h1>
         <p class="hero-subtitle">Licensed Online Pharmacy • Genuine Medicines • PPB Approved</p>
-        <button onclick="showPage('shop')" class="start-btn">Start Shopping</button>
-    </div>
+<button onclick="showPage('shop')" class="start-btn">Start Shopping</button>    </div>
 
-    <!-- SHOP PAGE -->
     <div id="shop" class="page container">
         <div class="controls">
             <input type="text" id="searchInput" placeholder="Search medicines..." onkeyup="filterProducts()">
@@ -45,50 +38,33 @@
         <div class="product-grid" id="productGrid"></div>
     </div>
 
-    <!-- CART PAGE -->
     <div id="cart" class="page container">
         <h2>Your Cart</h2>
         <div id="cart-items"></div>
         <div class="cart-total" id="cart-total">Total: KSh 0</div>
         <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+        <p style="text-align:center; margin-top:15px; color:#666;">
+            Customer Care: <strong>0790787574</strong>
+        </p>
     </div>
 
-    <!-- AUTH MODAL -->
+    <!-- Login Modal -->
     <div id="authModal" class="modal">
         <div class="modal-content">
             <h2 id="modalTitle">Login to AfyAccess</h2>
-            <input type="email" id="emailInput" placeholder="Email address">
-            <input type="password" id="passwordInput" placeholder="Password">
+            <input type="email" id="emailInput" placeholder="Email address" required>
+            <input type="password" id="passwordInput" placeholder="Password" required>
             <button onclick="handleAuth()" id="authBtn">Login</button>
-            <p id="authMessage"></p>
-            <p><span onclick="toggleAuthMode()" id="toggleText">Don't have an account? Sign Up</span></p>
+            <p id="authMessage" style="color:red; margin:10px 0;"></p>
+            
+            <p style="margin:15px 0;">
+                <span onclick="toggleAuthMode()" id="toggleText" style="cursor:pointer; color:var(--primary);">Don't have an account? Sign Up</span>
+            </p>
+            <p onclick="forgotPassword()" style="cursor:pointer; color:#e11d48; text-align:center;">Forgot Password?</p>
             <button onclick="closeModal()" class="close-btn">Close</button>
         </div>
     </div>
 
-    <!-- PANIC ALERT MODAL -->
-    <div id="panicModal" class="panic-modal">
-        <div class="panic-content">
-            <h2>🚨 EMERGENCY ALERT</h2>
-            <p>Send your live location to a trusted contact.</p>
-            
-            <label>Loved One’s Email:</label>
-            <input type="email" id="recipientEmail" placeholder="name@example.com">
-            
-            <div id="panicMap"></div>
-            
-            <button onclick="sendPanicAlert()" class="panic-send-btn">🚨 SEND ALERT NOW</button>
-            <button onclick="closePanicModal()" class="cancel-btn">Cancel</button>
-            
-            <div id="panicStatus"></div>
-        </div>
-    </div>
-
-    <!-- FLOATING PANIC BUTTON -->
-    <button id="panic-float" onclick="openPanicModal()">🚨</button>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
