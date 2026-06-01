@@ -1,12 +1,12 @@
+// ====================== DATA & VARIABLES ======================
 let cart = [];
 let currentUser = null;
 let isLoginMode = true;
 
-const medicines = [
-    // PASTE ALL YOUR MEDICINES HERE (full list)
-    {id:1, product:"Albendazole Suspension", form:"Oral Suspension", route:"Oral", therapeutic:"Antinematodal Anthelmintic Agents", inn:"Albendazole", price:280},
-    {id:2, product:"Aspirin Tablets", form:"Tablet", route:"Oral", therapeutic:"Analgesics & Antipyretics", inn:"Acetylsalicylic Acid", price:120},
-    // ... all your prod {id:3, product:"Lonart Forte Tablet", form:"Tablet", route:"Oral", therapeutic:"Antimalarial Antiprotozoals", inn:"Artemether + Lumefantrine", price:450},
+const medicines = [ /*{id:2, product:"Aspirin Tablets", form:"Tablet", route:"Oral", therapeutic:"Analgesics & Antipyretics", inn:"Acetylsalicylic Acid", price:120},
+            {id:3, product:"Lonart Forte Tablet", form:"Tablet", route:"Oral", therapeutic:"Antimalarial Antiprotozoals", inn:"Artemether + Lumefantrine", price:450},
+            {id:4, product:"Gaviscon Double Action", form:"Syrup", route:"Oral", therapeutic:"Peptic Ulcer Drugs", inn:"Calcium Carbonate + Alginate", price:680},
+ {id:3, product:"Lonart Forte Tablet", form:"Tablet", route:"Oral", therapeutic:"Antimalarial Antiprotozoals", inn:"Artemether + Lumefantrine", price:450},
             {id:4, product:"Gaviscon Double Action", form:"Syrup", route:"Oral", therapeutic:"Peptic Ulcer Drugs", inn:"Calcium Carbonate + Alginate", price:680},
             {id:5, product:"Betamed Cream", form:"Cream", route:"Topical", therapeutic:"Corticosteroids", inn:"Betamethasone Valerate", price:320},
             {id:6, product:"Medizole Cream", form:"Cream", route:"Topical", therapeutic:"Antifungals", inn:"Clotrimazole", price:260},
@@ -393,9 +393,24 @@ const medicines = [
             {id:637, product:"Dermofix Cream 2%", form:"Cream", route:"Topical", therapeutic:"Antifungal", inn:"Sertaconazole", price:926},
             {id:638, product:"Cetraxal Plus Ear Drops", form:"Ear Drops", route:"Auricular", therapeutic:"Corticosteroid + Antibiotic", inn:"Ciprofloxacin + Fluocinolone", price:1250},
             {id:639, product:"Dislep Injection", form:"Injectable", route:"Parenteral", therapeutic:"Gastrokinetic", inn:"Levosulpiride", price:980},
+        {name: "Eucerin Even Skin Anti Pigment Dual Serum 30ML", price: 4664, oldPrice: 5830, discount: "20%"},
+      {name: "Uncover Aloe Invisible Sunscreen 80ml", price: 2649, oldPrice: 2943, discount: "10%"},
+      {name: "Panadol Extra Tablets 100's", price: 850, oldPrice: null},
+      {name: "Coartem 80/480 Tablets 6's", price: 620, oldPrice: null},
+      {name: "Amoxicillin 500mg Capsules 100's", price: 450, oldPrice: null},
+      {name: "Ayuvit Cough Syrup 200ml", price: 709, oldPrice: 834, discount: "15%"},
+      {name: "Cerave AM Facial Moisturizing Lotion SPF50", price: 2557, oldPrice: 3008},
+      {name: "Mamalait Granules 250g", price: 2200, oldPrice: 2750},
     {id:647, product:"Mamalait Granules 250g", form:"Granules", route:"Oral", therapeutic:"Supplement", inn:"", price:2200}
-];
+];TE YOUR FULL MEDICINES ARRAY HERE */ ];
 
+emailjs.init("xzpDVPZb_u8OFIHUu");
+
+let panicMap = null;
+let currentLat = null;
+let currentLon = null;
+
+// ====================== HELPER FUNCTIONS ======================
 function getCartKey() {
     return currentUser ? `afyCart_${currentUser.email}` : 'afyCart_guest';
 }
@@ -413,16 +428,11 @@ function loadData() {
 
 function updateUserUI() {
     const userInfo = document.getElementById('user-info');
-    if (currentUser) {
-        userInfo.textContent = `Logout (${currentUser.email.split('@')[0]})`;
-    } else {
-        userInfo.textContent = "Login";
-    }
+    userInfo.textContent = currentUser ? `Logout (${currentUser.email.split('@')[0]})` : "Login";
 }
 
 function handleUserClick() {
-    if (currentUser) signOut();
-    else showAuthModal();
+    currentUser ? signOut() : showAuthModal();
 }
 
 function signOut() {
@@ -434,9 +444,8 @@ function signOut() {
     }
 }
 
-// Auth functions (same as before)
+// ====================== AUTH ======================
 function showAuthModal() {
-    if (currentUser) return;
     document.getElementById('authModal').style.display = 'flex';
 }
 
@@ -450,9 +459,7 @@ function toggleAuthMode() {
     document.getElementById('authBtn').textContent = isLoginMode ? "Login" : "Sign Up";
 }
 
-async function handleAuth() {
-    // ... (your existing handleAuth function)
-    // For now, using local simulation
+function handleAuth() {
     const email = document.getElementById('emailInput').value.trim().toLowerCase();
     if (email) {
         currentUser = { email };
@@ -463,37 +470,9 @@ async function handleAuth() {
     }
 }
 
-function forgotPassword() {
-    alert("Password reset coming soon.");
-}
-
-// Cart functions (user-specific)
+// ====================== CART ======================
 function saveCart() {
     localStorage.setItem(getCartKey(), JSON.stringify(cart));
-}
-/*function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
-    });
-
-    document.getElementById(pageId).classList.add('active');
-
-    // 🔥 FIX: always reset scroll to top
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-} */
-
-function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(page => {
-        page.style.display = "none";
-    });
-
-    const activePage = document.getElementById(pageId);
-    activePage.style.display = "block";
-
-    window.scrollTo(0, 0);
 }
 
 function updateCartCount() {
@@ -505,14 +484,9 @@ function updateCartCount() {
 function addToCart(id) {
     const product = medicines.find(p => p.id === id);
     if (!product) return;
-
     const existing = cart.find(item => item.id === id);
-    if (existing) {
-        existing.quantity = (existing.quantity || 1) + 1;
-    } else {
-        cart.push({ ...product, quantity: 1 });
-    }
-
+    if (existing) existing.quantity = (existing.quantity || 1) + 1;
+    else cart.push({ ...product, quantity: 1 });
     saveCart();
     updateCartCount();
     alert(`${product.product} added to cart!`);
@@ -530,16 +504,12 @@ function renderCart() {
     }
 
     cart.forEach((item, index) => {
-        const itemTotal = (item.price || 0) * (item.quantity || 1);
+        const itemTotal = item.price * (item.quantity || 1);
         total += itemTotal;
-
         const div = document.createElement('div');
         div.className = 'cart-item';
         div.innerHTML = `
-            <div style="flex:1">
-                <strong>${item.product}</strong><br>
-                <small>KSh ${item.price} × ${item.quantity || 1}</small>
-            </div>
+            <div style="flex:1"><strong>${item.product}</strong><br><small>KSh ${item.price} × ${item.quantity || 1}</small></div>
             <div style="display:flex;align-items:center;gap:12px">
                 <button onclick="changeQuantity(${index}, -1)">–</button>
                 <span>${item.quantity || 1}</span>
@@ -571,27 +541,22 @@ function removeFromCart(index) {
 }
 
 function checkout() {
-    if (cart.length === 0) return alert("Your cart is empty!");
-    if (!currentUser) {
-        alert("Please login first");
-        showAuthModal();
-        return;
-    }
+    if (cart.length === 0) return alert("Cart is empty!");
+    if (!currentUser) return alert("Please login first"), showAuthModal();
 
-    const phone = prompt("Enter your phone number:");
+    const phone = prompt("Enter phone number:");
     const address = prompt("Enter delivery address:");
-
-    if (!phone || !address) return alert("Phone and address required");
-
-    alert(`🎉 Order placed successfully!\nPhone: ${phone}\nAddress: ${address}`);
-    cart = [];
-    saveCart();
-    renderCart();
-    updateCartCount();
-    showPage('shop');
+    if (phone && address) {
+        alert(`Order placed successfully!\nPhone: ${phone}\nAddress: ${address}`);
+        cart = [];
+        saveCart();
+        renderCart();
+        updateCartCount();
+        showPage('shop');
+    }
 }
 
-// Shop functions
+// ====================== SHOP ======================
 function renderProducts(data) {
     const grid = document.getElementById('productGrid');
     grid.innerHTML = '';
@@ -601,13 +566,9 @@ function renderProducts(data) {
         card.innerHTML = `
             <h3>${item.product}</h3>
             <p style="color:#64748b;">${item.therapeutic || ''}</p>
-            <p><strong>${item.form || ''}</strong> • ${item.route || ''}</p>
-            <p style="font-size:1.7rem; color:#10b981; font-weight:bold; margin:12px 0;">
-                KSh ${(item.price || 0).toLocaleString()}
-            </p>
-            <button onclick="addToCart(${item.id}); event.stopImmediatePropagation()" class="add-btn">
-                Add to Cart
-            </button>
+            <p><strong>${item.form}</strong> • ${item.route}</p>
+            <p style="font-size:1.7rem;color:#10b981;font-weight:bold;">KSh ${item.price.toLocaleString()}</p>
+            <button onclick="addToCart(${item.id}); event.stopImmediatePropagation()" class="add-btn">Add to Cart</button>
         `;
         grid.appendChild(card);
     });
@@ -616,21 +577,79 @@ function renderProducts(data) {
 function filterProducts() {
     const term = document.getElementById('searchInput').value.toLowerCase();
     const cls = document.getElementById('classFilter').value;
-    const filtered = allProducts.filter(m => {
-        const match = !term || (m.product && m.product.toLowerCase().includes(term));
-        const catMatch = !cls || m.therapeutic === cls;
-        return match && catMatch;
+    const filtered = medicines.filter(m => {
+        return (!term || m.product.toLowerCase().includes(term)) &&
+               (!cls || m.therapeutic === cls);
     });
     renderProducts(filtered);
 }
 
-function showPage(page) {
+function showPage(pageId) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(page).classList.add('active');
-    if (page === 'cart') renderCart();
+    document.getElementById(pageId).classList.add('active');
+    if (pageId === 'cart') renderCart();
 }
 
-// Initialize
+// ====================== PANIC ALERT ======================
+function openPanicModal() {
+    document.getElementById('panicModal').style.display = 'flex';
+    getCurrentLocationForPanic();
+}
+
+function closePanicModal() {
+    document.getElementById('panicModal').style.display = 'none';
+}
+
+function getCurrentLocationForPanic() {
+    const status = document.getElementById('panicStatus');
+    status.textContent = "Getting location...";
+
+    navigator.geolocation.getCurrentPosition(pos => {
+        currentLat = pos.coords.latitude;
+        currentLon = pos.coords.longitude;
+
+        if (!panicMap) {
+            panicMap = L.map('panicMap').setView([currentLat, currentLon], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(panicMap);
+        } else {
+            panicMap.setView([currentLat, currentLon], 15);
+        }
+
+        if (window.panicMarker) window.panicMarker.remove();
+        window.panicMarker = L.marker([currentLat, currentLon]).addTo(panicMap).bindPopup("Your Location").openPopup();
+
+        status.textContent = "Location acquired ✅";
+    }, () => status.textContent = "Failed to get location");
+}
+
+function sendPanicAlert() {
+    const email = document.getElementById('recipientEmail').value.trim();
+    const status = document.getElementById('panicStatus');
+
+    if (!email || !currentLat) {
+        status.textContent = "Please fill email and allow location";
+        status.style.color = "red";
+        return;
+    }
+
+    status.textContent = "Sending alert...";
+
+    const link = `https://www.google.com/maps?q=${currentLat},${currentLon}`;
+
+    emailjs.send("service_vlivv9v", "template_udawx1q", {
+        to_email: email,
+        message: `🚨 EMERGENCY ALERT!\nLocation: ${link}\nTime: ${new Date().toLocaleString()}`
+    }).then(() => {
+        status.innerHTML = "✅ Alert sent successfully!";
+        status.style.color = "green";
+        setTimeout(closePanicModal, 2000);
+    }).catch(() => {
+        status.textContent = "Failed to send alert";
+        status.style.color = "red";
+    });
+}
+
+// ====================== INIT ======================
 window.onload = () => {
     loadData();
     renderProducts(medicines);
@@ -639,8 +658,7 @@ window.onload = () => {
     const select = document.getElementById('classFilter');
     classes.forEach(c => {
         const opt = document.createElement('option');
-        opt.value = c;
-        opt.textContent = c;
+        opt.value = c; opt.textContent = c;
         select.appendChild(opt);
     });
 };
