@@ -484,7 +484,7 @@ function saveCart() {
         behavior: "smooth"
     });
 } */
-
+/*
 function showPage(pageId) {
     document.querySelectorAll('.page').forEach(page => {
         page.style.display = "none";
@@ -494,6 +494,23 @@ function showPage(pageId) {
     activePage.style.display = "block";
 
     window.scrollTo(0, 0);
+}
+ */
+function showPage(page) {
+    document.querySelectorAll('.page').forEach(p => {
+        p.classList.remove('active');
+    });
+
+    document.getElementById(page).classList.add('active');
+
+    if (page === 'cart') {
+        renderCart();
+    }
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 }
 
 function updateCartCount() {

@@ -36,10 +36,12 @@ header {
     max-width: 1280px;
     margin: auto;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
+    gap: 12px;
     padding: 0 1.5rem;
 }
+
 
 .logo {
     font-size: 2.4rem;
@@ -230,7 +232,20 @@ nav a.active {
     border-radius: 8px;
     font-weight: bold;
 }
+nav {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
 html, body {
     height: 100%;
     overflow-x: hidden;
+}
+.footer {
+    background: var(--primary);
+    color: white;
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    font-size: 0.95rem;
 }
