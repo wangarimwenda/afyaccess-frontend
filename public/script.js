@@ -433,7 +433,10 @@ function signOut() {
         alert("Signed out successfully.");
     }
 }
-
+function closeSuccessModal() {
+    document.getElementById("successModal").style.display = "none";
+    showPage("shop");
+}
 // Auth functions (same as before)
 function showAuthModal() {
     if (currentUser) return;
@@ -679,7 +682,6 @@ window.onload = () => {
 function closeCheckout() {
     document.getElementById("checkoutModal").style.display = "none";
 }
-
 function submitOrder() {
 
     const phone = document.getElementById("checkoutPhone").value.trim();
@@ -695,9 +697,9 @@ function submitOrder() {
         return;
     }
 
-    alert(
-        `Order placed successfully!\n\nPhone: ${phone}\nAddress: ${address}`
-    );
+    // Put phone and address into success modal
+    document.getElementById("successPhone").textContent = phone;
+    document.getElementById("successAddress").textContent = address;
 
     cart = [];
     saveCart();
@@ -705,5 +707,7 @@ function submitOrder() {
     updateCartCount();
 
     closeCheckout();
-    showPage('shop');
+
+    // Show success modal
+    document.getElementById("successModal").style.display = "flex";
 }

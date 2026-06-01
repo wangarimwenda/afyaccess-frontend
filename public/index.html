@@ -7,6 +7,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
+<div id="successModal" class="modal">
+    <div class="modal-content">
+        <div style="font-size:4rem;">✅</div>
+
+        <h2>Order Placed Successfully!</h2>
+
+        <p style="margin:15px 0;">
+            Thank you for shopping with AfyAccess.
+            Our team will contact you shortly to confirm your order.
+        </p>
+
+        <button onclick="closeSuccessModal()" class="checkout-btn">
+            Continue Shopping
+        </button>
+    </div>
+</div>
 <body>
     <header>
     <div class="nav">
@@ -106,6 +122,18 @@
         </button>
     </div>
 </div>
+<div id="successModal" class="modal">
+    <div class="modal-content">
+        <h2>Order Placed Successfully!</h2>
+
+        <p><strong>Phone:</strong> <span id="successPhone"></span></p>
+
+        <p><strong>Delivery Address:</strong> <span id="successAddress"></span></p>
+
+        <button onclick="closeSuccessModal()">Close</button>
+    </div>
+</div>
+
     <footer class="footer">
     <p>&copy; WangariMwenda 2025. All Rights Reserved.</p>
 </footer>
