@@ -79,6 +79,33 @@
             <button onclick="closeModal()" class="close-btn">Close</button>
         </div>
     </div>
+    <div id="checkoutModal" class="modal">
+    <div class="modal-content">
+        <h2>Checkout</h2>
+
+        <input
+            type="tel"
+            id="checkoutPhone"
+            placeholder="Phone Number"
+            required
+        >
+
+        <textarea
+            id="checkoutAddress"
+            placeholder="Delivery Address"
+            required
+            style="width:100%;height:100px;padding:10px;margin:10px 0;"
+        ></textarea>
+
+        <button onclick="submitOrder()">
+            Place Order
+        </button>
+
+        <button onclick="closeCheckout()" class="close-btn">
+            Cancel
+        </button>
+    </div>
+</div>
     <footer class="footer">
     <p>&copy; WangariMwenda 2025. All Rights Reserved.</p>
 </footer>

@@ -587,7 +587,7 @@ function removeFromCart(index) {
     }
 }
 
-function checkout() {
+/*function checkout() {
     if (cart.length === 0) return alert("Your cart is empty!");
     if (!currentUser) {
         alert("Please login first");
@@ -607,7 +607,22 @@ function checkout() {
     updateCartCount();
     showPage('shop');
 }
+*/
 
+function checkout() {
+    if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+    }
+
+    if (!currentUser) {
+        alert("Please login first.");
+        showAuthModal();
+        return;
+    }
+
+    document.getElementById("checkoutModal").style.display = "flex";
+}
 // Shop functions
 function renderProducts(data) {
     const grid = document.getElementById('productGrid');
@@ -661,3 +676,34 @@ window.onload = () => {
         select.appendChild(opt);
     });
 };
+function closeCheckout() {
+    document.getElementById("checkoutModal").style.display = "none";
+}
+
+function submitOrder() {
+
+    const phone = document.getElementById("checkoutPhone").value.trim();
+    const address = document.getElementById("checkoutAddress").value.trim();
+
+    if (!phone) {
+        alert("Phone number is required.");
+        return;
+    }
+
+    if (!address) {
+        alert("Delivery address is required.");
+        return;
+    }
+
+    alert(
+        `Order placed successfully!\n\nPhone: ${phone}\nAddress: ${address}`
+    );
+
+    cart = [];
+    saveCart();
+    renderCart();
+    updateCartCount();
+
+    closeCheckout();
+    showPage('shop');
+}
