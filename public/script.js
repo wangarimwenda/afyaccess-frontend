@@ -535,7 +535,7 @@ function addToCart(id) {
 
     saveCart();
     updateCartCount();
-    alert(`${product.product} added to cart!`);
+    showCartNotification(`${product.product} added to cart`);
 }
 
 function renderCart() {
@@ -710,4 +710,15 @@ function submitOrder() {
 
     // Show success modal
     document.getElementById("successModal").style.display = "flex";
+}
+
+function showCartNotification(message) {
+    const notification = document.getElementById("cartNotification");
+
+    notification.textContent = message;
+    notification.style.display = "block";
+
+    setTimeout(() => {
+        notification.style.display = "none";
+    }, 2000);
 }
