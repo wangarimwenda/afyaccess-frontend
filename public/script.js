@@ -454,15 +454,65 @@ function toggleAuthMode() {
 }
 
 async function handleAuth() {
-    // ... (your existing handleAuth function)
-    // For now, using local simulation
-    const email = document.getElementById('emailInput').value.trim().toLowerCase();
-    if (email) {
-        currentUser = { email };
-        localStorage.setItem('afyUser', JSON.stringify(currentUser));
+
+    const email = document.getElementById('emailInput')
+        .value
+        .trim()
+        .toLowerCase();
+
+    const password = document.getElementById('passwordInput')
+        .value
+        .trim();
+
+    if (!email || !password) {
+        alert("Email and password required");
+        return;
+    }
+
+    try {
+
+        const endpoint = isLoginMode
+            ? '/login'
+            : '/register';
+
+        const response = await fetch(
+            `https://afyaccess-backend.onrender.com/api/auth${endpoint}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email,
+                    password
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.message);
+            return;
+        }
+
+        currentUser = {
+            email
+        };
+
+        localStorage.setItem(
+            'afyUser',
+            JSON.stringify(currentUser)
+        );
+
         updateUserUI();
         closeModal();
-        alert("✅ Login Successful!");
+
+        alert(data.message);
+
+    } catch (err) {
+        console.error(err);
+        alert("Server connection failed.");
     }
 }
 
@@ -682,7 +732,7 @@ window.onload = () => {
 function closeCheckout() {
     document.getElementById("checkoutModal").style.display = "none";
 }
-function submitOrder() {
+/*function submitOrder() {
 
     const phone = document.getElementById("checkoutPhone").value.trim();
     const address = document.getElementById("checkoutAddress").value.trim();
@@ -710,6 +760,74 @@ function submitOrder() {
 
     // Show success modal
     document.getElementById("successModal").style.display = "flex";
+}
+*/
+
+async function submitOrder() {
+    const phone = document.getElementById("checkoutPhone").value.trim();
+    const address = document.getElementById("checkoutAddress").value.trim();
+
+    if (!phone) {
+        alert("Phone number is required.");
+        return;
+    }
+    if (!address) {
+        alert("Delivery address is required.");
+        return;
+    }
+
+    if (cart.length === 0 || !currentUser) {
+        alert("Cart is empty or not logged in");
+        return;
+    }
+
+    // Calculate total
+    const total = cart.reduce((sum, item) => {
+        return sum + (item.price * (item.quantity || 1));
+    }, 0);
+
+    const orderData = {
+        user: currentUser.email,
+        items: cart.map(item => ({
+            productId: item.id,
+            product: item.product,
+            price: item.price,
+            quantity: item.quantity || 1
+        })),
+        total: total,
+        phone: phone,
+        address: address
+    };
+
+    try {
+        const response = await fetch('https://afyaccess-backend.onrender.com/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            document.getElementById("successPhone").textContent = phone;
+            document.getElementById("successAddress").textContent = address;
+
+            cart = [];
+            saveCart();
+            renderCart();
+            updateCartCount();
+
+            closeCheckout();
+            document.getElementById("successModal").style.display = "flex";
+            
+            console.log("✅ Order saved to backend:", data);
+        } else {
+            alert(data.message || "Failed to place order");
+        }
+    } catch (err) {
+        console.error("Order error:", err);
+        alert("Network error. Please check your connection and try again.");
+    }
 }
 
 function showCartNotification(message) {
