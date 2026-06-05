@@ -27,9 +27,9 @@ export default function App() {
   }, []);
 
   // SAVE CART
-  useEffect(() => {
-    localStorage.setItem("afyCart", JSON.stringify(cart));
-  }, [cart]);
+ useEffect(() => {
+  fetchOrders();
+}, []);
 
   // ADD TO CART
   function addToCart(id) {
@@ -99,9 +99,11 @@ export default function App() {
       )}
 
       {cart.length > 0 && (
-        <button onClick={() => setShowCheckout(true)}>
-          Proceed to Checkout
-        </button>
+        <button onClick={() => {
+  setPage("admin");
+}}>
+  Admin
+</button>
       )}
     </div>
   );
@@ -133,8 +135,7 @@ export default function App() {
       {/* PAGES */}
       {page === "shop" && renderShop()}
       {page === "cart" && renderCart()}
-      {page === "admin" && <AdminOrders />}
-
+{page === "admin" && <AdminOrders key={page} />}
       {/* MODALS */}
       {showAuth && (
         <AuthModal
