@@ -1,19 +1,12 @@
-// ================== GLOBAL VARIABLES ==================
 let cart = [];
 let currentUser = null;
 let isLoginMode = true;
 
-const API_BASE = "https://afyaccess-backend.onrender.com/api";
-
-// ================== FULL MEDICINES ARRAY ==================
 const medicines = [
+    // PASTE ALL YOUR MEDICINES HERE (full list)
     {id:1, product:"Albendazole Suspension", form:"Oral Suspension", route:"Oral", therapeutic:"Antinematodal Anthelmintic Agents", inn:"Albendazole", price:280},
     {id:2, product:"Aspirin Tablets", form:"Tablet", route:"Oral", therapeutic:"Analgesics & Antipyretics", inn:"Acetylsalicylic Acid", price:120},
-    {id:3, product:"Lonart Forte Tablet", form:"Tablet", route:"Oral", therapeutic:"Antimalarial Antiprotozoals", inn:"Artemether + Lumefantrine", price:450},
-    // ... (Paste the rest of your 600+ products here) ...
-       {id:1, product:"Albendazole Suspension", form:"Oral Suspension", route:"Oral", therapeutic:"Antinematodal Anthelmintic Agents", inn:"Albendazole", price:280},
-            {id:2, product:"Aspirin Tablets", form:"Tablet", route:"Oral", therapeutic:"Analgesics & Antipyretics", inn:"Acetylsalicylic Acid", price:120},
-            {id:3, product:"Lonart Forte Tablet", form:"Tablet", route:"Oral", therapeutic:"Antimalarial Antiprotozoals", inn:"Artemether + Lumefantrine", price:450},
+    // ... all your prod {id:3, product:"Lonart Forte Tablet", form:"Tablet", route:"Oral", therapeutic:"Antimalarial Antiprotozoals", inn:"Artemether + Lumefantrine", price:450},
             {id:4, product:"Gaviscon Double Action", form:"Syrup", route:"Oral", therapeutic:"Peptic Ulcer Drugs", inn:"Calcium Carbonate + Alginate", price:680},
             {id:5, product:"Betamed Cream", form:"Cream", route:"Topical", therapeutic:"Corticosteroids", inn:"Betamethasone Valerate", price:320},
             {id:6, product:"Medizole Cream", form:"Cream", route:"Topical", therapeutic:"Antifungals", inn:"Clotrimazole", price:260},
@@ -400,23 +393,16 @@ const medicines = [
             {id:637, product:"Dermofix Cream 2%", form:"Cream", route:"Topical", therapeutic:"Antifungal", inn:"Sertaconazole", price:926},
             {id:638, product:"Cetraxal Plus Ear Drops", form:"Ear Drops", route:"Auricular", therapeutic:"Corticosteroid + Antibiotic", inn:"Ciprofloxacin + Fluocinolone", price:1250},
             {id:639, product:"Dislep Injection", form:"Injectable", route:"Parenteral", therapeutic:"Gastrokinetic", inn:"Levosulpiride", price:980},
-        {name: "Eucerin Even Skin Anti Pigment Dual Serum 30ML", price: 4664, oldPrice: 5830, discount: "20%"},
-      {name: "Uncover Aloe Invisible Sunscreen 80ml", price: 2649, oldPrice: 2943, discount: "10%"},
-      {name: "Panadol Extra Tablets 100's", price: 850, oldPrice: null},
-      {name: "Coartem 80/480 Tablets 6's", price: 620, oldPrice: null},
-      {name: "Amoxicillin 500mg Capsules 100's", price: 450, oldPrice: null},
-      {name: "Ayuvit Cough Syrup 200ml", price: 709, oldPrice: 834, discount: "15%"},
-      {name: "Cerave AM Facial Moisturizing Lotion SPF50", price: 2557, oldPrice: 3008},
-      {name: "Mamalait Granules 250g", price: 2200, oldPrice: 2750},
     {id:647, product:"Mamalait Granules 250g", form:"Granules", route:"Oral", therapeutic:"Supplement", inn:"", price:2200}
 ];
 
-let allProducts = medicines;
+function getCartKey() {
+    return currentUser ? `afyCart_${currentUser.email}` : 'afyCart_guest';
+}
 
-// ================== LOAD DATA ==================
 function loadData() {
-    const savedCart = localStorage.getItem('afyCart');
-    if (savedCart) cart = JSON.parse(savedCart);
+    const savedCart = localStorage.getItem(getCartKey());
+    cart = savedCart ? JSON.parse(savedCart) : [];
 
     const savedUser = localStorage.getItem('afyUser');
     if (savedUser) currentUser = JSON.parse(savedUser);
@@ -434,54 +420,6 @@ function updateUserUI() {
     }
 }
 
-// ================== AUTHENTICATION ==================
-function showAuthModal() {
-    document.getElementById('authModal').style.display = 'flex';
-}
-
-function closeModal() {
-    document.getElementById('authModal').style.display = 'none';
-}
-
-async function handleAuth() {
-    const email = document.getElementById('emailInput').value.trim().toLowerCase();
-    const password = document.getElementById('passwordInput').value.trim();
-    const msg = document.getElementById('authMessage');
-
-    if (!email || !password) {
-        msg.textContent = "Email and password required";
-        return;
-    }
-
-    try {
-        const endpoint = isLoginMode ? '/login' : '/register';
-        const res = await fetch(`${API_BASE}${endpoint}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password })
-        });
-
-        const data = await res.json();
-
-        if (res.ok) {
-            if (isLoginMode) {
-                currentUser = { email: email };
-                localStorage.setItem('afyUser', JSON.stringify(currentUser));
-                updateUserUI();
-                closeModal();
-                alert("✅ Login Successful!");
-            } else {
-                alert("✅ Account created! Please login.");
-                toggleAuthMode();
-            }
-        } else {
-            msg.textContent = data.message || "Failed";
-        }
-    } catch (err) {
-        msg.textContent = "Cannot connect to server";
-    }
-}
-
 function handleUserClick() {
     if (currentUser) signOut();
     else showAuthModal();
@@ -495,10 +433,147 @@ function signOut() {
         alert("Signed out successfully.");
     }
 }
+function closeSuccessModal() {
+    document.getElementById("successModal").style.display = "none";
+    showPage("shop");
+}
+// Auth functions (same as before)
+function showAuthModal() {
+    if (currentUser) return;
+    document.getElementById('authModal').style.display = 'flex';
+}
 
-// ================== CART FUNCTIONS ==================
+function closeModal() {
+    document.getElementById('authModal').style.display = 'none';
+}
+
+function toggleAuthMode() {
+    isLoginMode = !isLoginMode;
+    document.getElementById('modalTitle').textContent = isLoginMode ? "Login to AfyAccess" : "Create Account";
+    document.getElementById('authBtn').textContent = isLoginMode ? "Login" : "Sign Up";
+}
+
+async function handleAuth() {
+
+    const email = document.getElementById('emailInput')
+        .value
+        .trim()
+        .toLowerCase();
+
+    const password = document.getElementById('passwordInput')
+        .value
+        .trim();
+
+    if (!email || !password) {
+        alert("Email and password required");
+        return;
+    }
+
+    try {
+
+        const endpoint = isLoginMode
+            ? '/login'
+            : '/register';
+
+        const response = await fetch(
+            `https://afyaccess-backend.onrender.com/api/auth${endpoint}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email,
+                    password
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.message);
+            return;
+        }
+
+        currentUser = {
+            email
+        };
+
+        localStorage.setItem(
+            'afyUser',
+            JSON.stringify(currentUser)
+        );
+
+        updateUserUI();
+        closeModal();
+
+        alert(data.message);
+
+    } catch (err) {
+        console.error(err);
+        alert("Server connection failed.");
+    }
+}
+
+function forgotPassword() {
+    alert("Password reset coming soon.");
+}
+
+// Cart functions (user-specific)
+function saveCart() {
+    localStorage.setItem(getCartKey(), JSON.stringify(cart));
+}
+/*function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+    });
+
+    document.getElementById(pageId).classList.add('active');
+
+    // 🔥 FIX: always reset scroll to top
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+} */
+/*
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(page => {
+        page.style.display = "none";
+    });
+
+    const activePage = document.getElementById(pageId);
+    activePage.style.display = "block";
+
+    window.scrollTo(0, 0);
+}
+ */
+function showPage(page) {
+    document.querySelectorAll('.page').forEach(p => {
+        p.classList.remove('active');
+    });
+
+    document.getElementById(page).classList.add('active');
+
+    if (page === 'cart') {
+        renderCart();
+    }
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+function updateCartCount() {
+    const count = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+    document.getElementById('cart-count').textContent = count;
+    document.getElementById('cart-count-header').textContent = count;
+}
+
 function addToCart(id) {
-    const product = allProducts.find(p => p.id === id);
+    const product = medicines.find(p => p.id === id);
     if (!product) return;
 
     const existing = cart.find(item => item.id === id);
@@ -510,22 +585,13 @@ function addToCart(id) {
 
     saveCart();
     updateCartCount();
-    alert(`${product.product} added to cart!`);
-}
-
-function saveCart() {
-    localStorage.setItem('afyCart', JSON.stringify(cart));
-}
-
-function updateCartCount() {
-    const count = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
-    document.getElementById('cart-count').textContent = count;
-    document.getElementById('cart-count-header').textContent = count;
+    showCartNotification(`${product.product} added to cart`);
 }
 
 function renderCart() {
     const container = document.getElementById('cart-items');
     container.innerHTML = '';
+    let total = 0;
 
     if (cart.length === 0) {
         container.innerHTML = `<p style="text-align:center; padding:60px; color:#666;">Your cart is empty</p>`;
@@ -533,7 +599,6 @@ function renderCart() {
         return;
     }
 
-    let total = 0;
     cart.forEach((item, index) => {
         const itemTotal = (item.price || 0) * (item.quantity || 1);
         total += itemTotal;
@@ -575,81 +640,46 @@ function removeFromCart(index) {
     }
 }
 
-// ================== M-PESA CHECKOUT ==================
-async function checkout() {
+/*function checkout() {
     if (cart.length === 0) return alert("Your cart is empty!");
-
     if (!currentUser) {
         alert("Please login first");
         showAuthModal();
         return;
     }
 
-    document.getElementById('checkoutModal').style.display = 'flex';
+    const phone = prompt("Enter your phone number:");
+    const address = prompt("Enter delivery address:");
+
+    if (!phone || !address) return alert("Phone and address required");
+
+    alert(`🎉 Order placed successfully!\nPhone: ${phone}\nAddress: ${address}`);
+    cart = [];
+    saveCart();
+    renderCart();
+    updateCartCount();
+    showPage('shop');
 }
+*/
 
-async function payWithMpesa() {
-    const phone = document.getElementById("checkoutPhone").value.trim();
-    const address = document.getElementById("checkoutAddress").value.trim();
-
-    if (!phone || !address) {
-        return alert("Phone number and delivery address are required");
+function checkout() {
+    if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
     }
 
-    const total = cart.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 1), 0);
-
-    try {
-        const res = await fetch('https://afyaccess-backend.onrender.com/api/mpesa/stkpush', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                phone: phone,
-                amount: Math.round(total),
-                accountReference: "AfyAccess" + Date.now()
-            })
-        });
-
-        const data = await res.json();
-
-        if (res.ok) {
-            alert("✅ M-Pesa payment request sent! Check your phone for STK Push.");
-            closeCheckout();
-
-            // Clear cart after successful request
-            setTimeout(() => {
-                cart = [];
-                saveCart();
-                renderCart();
-                updateCartCount();
-                showPage('shop');
-            }, 3000);
-        } else {
-            alert(data.message || "Payment request failed");
-        }
-    } catch (err) {
-        alert("Cannot connect to M-Pesa. Please try again.");
+    if (!currentUser) {
+        alert("Please login first.");
+        showAuthModal();
+        return;
     }
+
+    document.getElementById("checkoutModal").style.display = "flex";
 }
-
-function closeCheckout() {
-    document.getElementById('checkoutModal').style.display = 'none';
-}
-
-// ================== PAGE NAVIGATION ==================
-function showPage(page) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(page).classList.add('active');
-
-    if (page === 'cart') renderCart();
-
-    window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-// ================== SHOP FUNCTIONS ==================
+// Shop functions
 function renderProducts(data) {
     const grid = document.getElementById('productGrid');
     grid.innerHTML = '';
-
     data.forEach(item => {
         const card = document.createElement('div');
         card.className = 'product-card';
@@ -679,12 +709,17 @@ function filterProducts() {
     renderProducts(filtered);
 }
 
-// ================== INITIALIZE ==================
+function showPage(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(page).classList.add('active');
+    if (page === 'cart') renderCart();
+}
+
+// Initialize
 window.onload = () => {
     loadData();
-    renderProducts(allProducts);
+    renderProducts(medicines);
 
-    // Populate filter
     const classes = [...new Set(medicines.map(m => m.therapeutic).filter(Boolean))].sort();
     const select = document.getElementById('classFilter');
     classes.forEach(c => {
@@ -693,6 +728,115 @@ window.onload = () => {
         opt.textContent = c;
         select.appendChild(opt);
     });
-
-    showPage('home');   // Start on home page
 };
+function closeCheckout() {
+    document.getElementById("checkoutModal").style.display = "none";
+}
+/*function submitOrder() {
+
+    const phone = document.getElementById("checkoutPhone").value.trim();
+    const address = document.getElementById("checkoutAddress").value.trim();
+
+    if (!phone) {
+        alert("Phone number is required.");
+        return;
+    }
+
+    if (!address) {
+        alert("Delivery address is required.");
+        return;
+    }
+
+    // Put phone and address into success modal
+    document.getElementById("successPhone").textContent = phone;
+    document.getElementById("successAddress").textContent = address;
+
+    cart = [];
+    saveCart();
+    renderCart();
+    updateCartCount();
+
+    closeCheckout();
+
+    // Show success modal
+    document.getElementById("successModal").style.display = "flex";
+}
+*/
+
+async function submitOrder() {
+    const phone = document.getElementById("checkoutPhone").value.trim();
+    const address = document.getElementById("checkoutAddress").value.trim();
+
+    if (!phone) {
+        alert("Phone number is required.");
+        return;
+    }
+    if (!address) {
+        alert("Delivery address is required.");
+        return;
+    }
+
+    if (cart.length === 0 || !currentUser) {
+        alert("Cart is empty or not logged in");
+        return;
+    }
+
+    // Calculate total
+    const total = cart.reduce((sum, item) => {
+        return sum + (item.price * (item.quantity || 1));
+    }, 0);
+
+    const orderData = {
+        user: currentUser.email,
+        items: cart.map(item => ({
+            productId: item.id,
+            product: item.product,
+            price: item.price,
+            quantity: item.quantity || 1
+        })),
+        total: total,
+        phone: phone,
+        address: address
+    };
+
+    try {
+        const response = await fetch('https://afyaccess-backend.onrender.com/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            document.getElementById("successPhone").textContent = phone;
+            document.getElementById("successAddress").textContent = address;
+
+            cart = [];
+            saveCart();
+            renderCart();
+            updateCartCount();
+
+            closeCheckout();
+            document.getElementById("successModal").style.display = "flex";
+            
+            console.log("✅ Order saved to backend:", data);
+        } else {
+            alert(data.message || "Failed to place order");
+        }
+    } catch (err) {
+        console.error("Order error:", err);
+        alert("Network error. Please check your connection and try again.");
+    }
+}
+
+function showCartNotification(message) {
+    const notification = document.getElementById("cartNotification");
+
+    notification.textContent = message;
+    notification.style.display = "block";
+
+    setTimeout(() => {
+        notification.style.display = "none";
+    }, 2000);
+}
