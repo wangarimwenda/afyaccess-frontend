@@ -30,8 +30,28 @@ export default function App() {
   const [adminPassword, setAdminPassword] = useState("");
   const [showAdminPrompt, setShowAdminPrompt] = useState(false);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  const [showAdminPassword, setShowAdminPassword] = useState(false);
+  const [showAdminForgot, setShowAdminForgot] = useState(false);
 
-  // ================= RESET PASSWORD =================
+  // ================= FORGOT ADMIN PASSWORD =================
+  const handleForgotAdminPassword = async () => {
+    try {
+      const res = await fetch(
+        "https://afyaccess-backend.onrender.com/api/auth/forgot-password",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: "wangarimwenda0@gmail.com" })
+        }
+      );
+
+      const data = await res.json();
+      alert("Admin password reset link sent to your email");
+      setShowAdminForgot(false);
+    } catch (err) {
+      alert("Error sending reset email");
+    }
+  };
   const path = window.location.pathname;
   const resetToken = path.split("/reset-password/")[1];
   const isResetRoute = path.startsWith("/reset-password/");
@@ -371,26 +391,54 @@ if (isResetRoute) {
         <div className="modal-overlay">
           <div className="modal-box">
             <h2>Admin Access</h2>
-            <input
-              type="password"
-              placeholder="Enter admin password"
-              value={adminPassword}
-              onChange={(e) => setAdminPassword(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === "Enter") {
-                  if (adminPassword === "Admin@123") {
-                    setIsAdminAuthenticated(true);
-                    setPage("admin");
-                    setStartedShopping(true);
-                    setShowAdminPrompt(false);
-                    setAdminPassword("");
-                  } else {
-                    alert("Invalid password");
-                    setAdminPassword("");
+            <div className="password-field">
+              <input
+                type={showAdminPassword ? "text" : "password"}
+                placeholder="Enter admin password"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    if (adminPassword === "Admin@123") {
+                      setIsAdminAuthenticated(true);
+                      setPage("admin");
+                      setStartedShopping(true);
+                      setShowAdminPrompt(false);
+                      setAdminPassword("");
+                    } else {
+                      alert("Invalid password");
+                      setAdminPassword("");
+                    }
                   }
-                }
-              }}
-            />
+                }}
+              />
+              <span
+                className="eye-icon"
+                onClick={() => setShowAdminPassword(!showAdminPassword)}
+              >
+                {showAdminPassword ? "🙈" : "👁️"}
+              </span>
+            </div>
+            
+            <p
+              style={{ color: "blue", cursor: "pointer", fontSize: "0.85rem" }}
+              onClick={() => setShowAdminForgot(true)}
+            >
+              Forgot Admin Password?
+            </p>
+
+            {showAdminForgot && (
+              <div style={{ marginTop: "15px", padding: "10px", background: "#f0f0f0", borderRadius: "5px" }}>
+                <p>A reset link will be sent to: <strong>wangarimwenda0@gmail.com</strong></p>
+                <button onClick={handleForgotAdminPassword} style={{ background: "#10b981", color: "white" }}>
+                  Send Reset Link
+                </button>
+                <button onClick={() => setShowAdminForgot(false)} style={{ marginTop: "10px" }}>
+                  Cancel
+                </button>
+              </div>
+            )}
+
             <button onClick={() => {
               if (adminPassword === "Admin@123") {
                 setIsAdminAuthenticated(true);
@@ -402,12 +450,13 @@ if (isResetRoute) {
                 alert("Invalid password");
                 setAdminPassword("");
               }
-            }}>
+            }} style={{ marginTop: "10px" }}>
               Access Admin
             </button>
             <button onClick={() => {
               setShowAdminPrompt(false);
               setAdminPassword("");
+              setShowAdminForgot(false);
             }}>
               Cancel
             </button>
