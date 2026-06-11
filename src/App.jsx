@@ -135,14 +135,9 @@ export default function App() {
       }
       setLoading(false);
     };
-      } catch (err) {
-        setMessage("Error resetting password");
-      }
-      setLoading(false);
-    };
 
-if (isResetRoute) {
-  return (
+    if (isResetRoute) {
+      return (
     <div className="app" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
       <div className="modal-box">
         <h2>Reset Your Password</h2>
@@ -180,10 +175,6 @@ if (isResetRoute) {
     </div>
   );
 }
-if (isResetRoute) {
-  return <ResetPasswordView />;
-}
-    return (
       <div style={{ padding: "20px" }}>
         <h2>Reset Password</h2>
 
