@@ -10,56 +10,192 @@ import AdminOrders from "./pages/AdminOrders";
 import "./App.css";
 
 export default function App() {
-  // STATE
+  // ================= STATE =================
+  const [startedShopping, setStartedShopping] = useState(false);
   const [cart, setCart] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
-  const [page, setPage] = useState("shop"); // ✅ ONLY ONCE
+  const [page, setPage] = useState("shop");
   const [showAuth, setShowAuth] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
 
-  // LOAD DATA
+  const [search, setSearch] = useState("");
+  const [therapeuticFilter, setTherapeuticFilter] = useState("All");
+
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationText, setNotificationText] = useState("");
+
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+
+  // ================= RESET PASSWORD =================
+  const path = window.location.pathname;
+  const resetToken = path.split("/reset-password/")[1];
+  const isResetRoute = path.startsWith("/reset-password/");
+
+ 
+
+  // ================= THERAPEUTIC CLASSES =================
+  const therapeuticClasses = [
+    "All",
+    ...new Set(medicines.map((m) => m.therapeutic))
+  ];
+
+  // ================= FORGOT PASSWORD =================
+  const handleForgotPassword = async () => {
+    try {
+      const res = await fetch(
+        "https://afyaccess-backend.onrender.com/api/auth/forgot-password",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: forgotEmail })
+        }
+      );
+
+      const data = await res.json();
+      alert(data.message);
+      setShowForgot(false);
+    } catch (err) {
+      alert("Error sending reset email");
+    }
+  };
+
+  // ================= RESET PASSWORD VIEW =================
+  const ResetPasswordView = () => {
+    const [newPassword, setNewPassword] = useState("");
+    const [message, setMessage] = useState("");
+
+    const handleReset = async () => {
+      try {
+        const res = await fetch(
+          "https://afyaccess-backend.onrender.com/api/auth/reset-password",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              token: resetToken,
+              newPassword
+            })
+          }
+        );
+
+        const data = await res.json();
+        setMessage(data.message);
+      } catch (err) {
+        setMessage("Error resetting password");
+      }
+    };
+if (isResetRoute) {
+  return <ResetPasswordView />;
+}
+    return (
+      <div style={{ padding: "20px" }}>
+        <h2>Reset Password</h2>
+
+        <input
+          type="password"
+          placeholder="Enter new password"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+        />
+
+        <button onClick={handleReset}>Update Password</button>
+
+        <p>{message}</p>
+      </div>
+    );
+  };
+
+  // ================= HOME =================
+  const renderHome = () => (
+    <section className="hero">
+      <h1>Your Health, Delivered Fast Across Kenya</h1>
+
+      <p className="hero-tagline">
+        Licensed Online Pharmacy • Genuine Medicines • PPB Approved
+      </p>
+
+      <p className="hero-description">
+        Access genuine medicines from trusted suppliers.
+      </p>
+
+      <button
+        className="start-btn"
+        onClick={() => {
+          setStartedShopping(true);
+          setPage("shop");
+        }}
+      >
+        Start Shopping
+      </button>
+    </section>
+  );
+
+  // ================= FILTER =================
+  const filteredMedicines = medicines.filter((item) => {
+    const q = search.toLowerCase();
+
+    const matchesSearch =
+      item.product.toLowerCase().includes(q) ||
+      item.therapeutic.toLowerCase().includes(q) ||
+      item.inn.toLowerCase().includes(q);
+
+    const matchesClass =
+      therapeuticFilter === "All" ||
+      item.therapeutic === therapeuticFilter;
+
+    return matchesSearch && matchesClass;
+  });
+
+  // ================= CART LOAD/SAVE =================
   useEffect(() => {
-    const savedUser = localStorage.getItem("afyUser");
-    if (savedUser) setCurrentUser(JSON.parse(savedUser));
+    if (!currentUser) return;
 
-    const savedCart = localStorage.getItem("afyCart");
-    if (savedCart) setCart(JSON.parse(savedCart));
-  }, []);
+    const saved = localStorage.getItem(`afyCart_${currentUser.email}`);
+    setCart(saved ? JSON.parse(saved) : []);
+  }, [currentUser]);
 
-  // SAVE CART
- useEffect(() => {
-  fetchOrders();
-}, []);
+  useEffect(() => {
+    if (!currentUser) return;
 
-  // ADD TO CART
+    localStorage.setItem(
+      `afyCart_${currentUser.email}`,
+      JSON.stringify(cart)
+    );
+  }, [cart, currentUser]);
+
+  // ================= ADD TO CART =================
   function addToCart(id) {
-    const product = medicines.find(p => p.id === id);
+    const product = medicines.find((p) => p.id === id);
     if (!product) return;
 
-    setCart(prev => {
-      const existing = prev.find(item => item.id === id);
+    setCart((prev) => {
+      const exists = prev.find((i) => i.id === id);
 
-      if (existing) {
-        return prev.map(item =>
-          item.id === id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
+      if (exists) {
+        return prev.map((i) =>
+          i.id === id ? { ...i, quantity: i.quantity + 1 } : i
         );
       }
 
       return [...prev, { ...product, quantity: 1 }];
     });
+
+    setNotificationText(`${product.product} added to cart`);
+    setShowNotification(true);
+
+    setTimeout(() => setShowNotification(false), 2000);
   }
 
-  // REMOVE ITEM
+  // ================= REMOVE CART =================
   function removeFromCart(id) {
-    setCart(prev => prev.filter(item => item.id !== id));
+    setCart((prev) => prev.filter((item) => item.id !== id));
   }
 
-  // CHANGE QTY
+  // ================= CHANGE QTY =================
   function changeQty(id, amount) {
-    setCart(prev =>
-      prev.map(item =>
+    setCart((prev) =>
+      prev.map((item) =>
         item.id === id
           ? { ...item, quantity: Math.max(1, item.quantity + amount) }
           : item
@@ -69,26 +205,48 @@ export default function App() {
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  // SHOP
+  // ================= SHOP =================
   const renderShop = () => (
-    <div className="grid">
-      {medicines.map(item => (
-        <ProductCard
-          key={item.id}
-          item={item}
-          addToCart={addToCart}
+    <div>
+      <div className="search-bar">
+        <input
+          type="text"
+          placeholder="Search medicines..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
-      ))}
+
+        <select
+          value={therapeuticFilter}
+          onChange={(e) => setTherapeuticFilter(e.target.value)}
+        >
+          {therapeuticClasses.map((c, i) => (
+            <option key={i} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="grid">
+        {filteredMedicines.map((item) => (
+          <ProductCard
+            key={item.id}
+            item={item}
+            addToCart={addToCart}
+          />
+        ))}
+      </div>
     </div>
   );
 
-  // CART
+  // ================= CART =================
   const renderCart = () => (
     <div className="cart-page">
       {cart.length === 0 ? (
         <p>Your cart is empty</p>
       ) : (
-        cart.map(item => (
+        cart.map((item) => (
           <CartItem
             key={item.id}
             item={item}
@@ -99,15 +257,19 @@ export default function App() {
       )}
 
       {cart.length > 0 && (
-        <button onClick={() => {
-  setPage("admin");
-}}>
-  Admin
-</button>
+        <button onClick={() => setShowCheckout(true)}>
+          Proceed to Checkout
+        </button>
       )}
     </div>
   );
 
+  // ================= RESET PAGE SWITCH =================
+  if (page === "reset") {
+    return <ResetPasswordView />;
+  }
+
+  // ================= MAIN RETURN =================
   return (
     <div className="app">
 
@@ -115,27 +277,48 @@ export default function App() {
       <header className="header">
         <h2>AfyAccess</h2>
 
-        <div>
-          <button onClick={() => setPage("shop")}>Shop</button>
+        <div className="nav-buttons">
+          <button onClick={() => setPage("shop")}>Home</button>
+
+          <button
+            onClick={() => {
+              setStartedShopping(true);
+              setPage("shop");
+            }}
+          >
+            Shop
+          </button>
+
           <button onClick={() => setPage("cart")}>
             Cart ({cartCount})
           </button>
 
-          {/* ✅ ADMIN BUTTON */}
           <button onClick={() => setPage("admin")}>
             Admin
           </button>
 
-          <button onClick={() => setShowAuth(true)}>
+          <button
+            onClick={() => {
+              if (currentUser) {
+                localStorage.removeItem("afyUser");
+                setCurrentUser(null);
+                setCart([]);
+              } else {
+                setShowAuth(true);
+              }
+            }}
+          >
             {currentUser ? "Logout" : "Login"}
           </button>
         </div>
       </header>
 
       {/* PAGES */}
-      {page === "shop" && renderShop()}
-      {page === "cart" && renderCart()}
-{page === "admin" && <AdminOrders key={page} />}
+      {!startedShopping && renderHome()}
+      {startedShopping && page === "shop" && renderShop()}
+      {startedShopping && page === "cart" && renderCart()}
+      {startedShopping && page === "admin" && <AdminOrders />}
+
       {/* MODALS */}
       {showAuth && (
         <AuthModal
@@ -152,6 +335,40 @@ export default function App() {
           close={() => setShowCheckout(false)}
         />
       )}
+
+      {showForgot && (
+        <div>
+          <h3>Reset Password</h3>
+
+          <input
+            placeholder="Enter your email"
+            value={forgotEmail}
+            onChange={(e) => setForgotEmail(e.target.value)}
+          />
+
+          <button onClick={handleForgotPassword}>
+            Send Reset Link
+          </button>
+
+          <button onClick={() => setShowForgot(false)}>
+            Cancel
+          </button>
+        </div>
+      )}
+
+      {showNotification && (
+        <div className="cart-notification">
+          {notificationText}
+        </div>
+      )}
+
+      {/* FOOTER */}
+      <footer className="footer">
+        <h3>AfyAccess Pharmacy</h3>
+        <p>© DrWangariMwenda</p>
+        <p>📞 0790787574</p>
+        <p>📍 Nanyuki, Kenya</p>
+      </footer>
 
     </div>
   );

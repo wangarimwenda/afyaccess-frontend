@@ -1,7 +1,11 @@
 import { useState } from "react";
 
-export default function CheckoutModal({ cart, setCart, close, currentUser }) {
-
+export default function CheckoutModal({
+  cart,
+  setCart,
+  close,
+  currentUser,
+}) {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
@@ -12,10 +16,20 @@ export default function CheckoutModal({ cart, setCart, close, currentUser }) {
     0
   );
 
-  async function submitOrder() {
-    setError("");
+async function submitOrder() {
+  setError("");
 
-    if (!phone || !address) {
+  if (!currentUser) {
+    setError("You must login before placing an order");
+    return;
+  }
+
+  if (!phone || !address) {
+    setError("Phone and address are required");
+    return;
+  }
+
+    if (!phone.trim() || !address.trim()) {
       setError("Phone and address are required");
       return;
     }
@@ -23,19 +37,32 @@ export default function CheckoutModal({ cart, setCart, close, currentUser }) {
     setLoading(true);
 
     try {
-      const res = await fetch("https://afyaccess-backend.onrender.com/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user: currentUser.email,
-          items: cart,
-          total,
-          phone,
-          address
-        })
-      });
+      const orderData = {
+        user: currentUser?.email || "guest",
+        items: cart,
+        total,
+        phone,
+        address,
+      };
+
+      console.log("Sending order:", orderData);
+
+      const res = await fetch(
+        "https://afyaccess-backend.onrender.com/api/orders",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(orderData),
+        }
+      );
+
+      console.log("Response status:", res.status);
 
       const data = await res.json();
+
+      console.log("Response data:", data);
 
       if (!res.ok) {
         setError(data.message || "Order failed");
@@ -46,10 +73,12 @@ export default function CheckoutModal({ cart, setCart, close, currentUser }) {
       alert("Order placed successfully!");
 
       setCart([]);
-      close();
+      localStorage.removeItem("afyCart");
 
+      close();
     } catch (err) {
-      setError("Network error");
+      console.error("ORDER ERROR:", err);
+      setError(err.message || "Network error");
     }
 
     setLoading(false);
@@ -58,31 +87,39 @@ export default function CheckoutModal({ cart, setCart, close, currentUser }) {
   return (
     <div className="modal-overlay">
       <div className="modal-box">
-
         <h2>Checkout</h2>
 
         <p>Total: KSh {total.toLocaleString()}</p>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && (
+          <p style={{ color: "red", fontWeight: "bold" }}>
+            {error}
+          </p>
+        )}
 
         <input
-          placeholder="Phone number"
+          type="text"
+          placeholder="Phone Number"
           value={phone}
-          onChange={e => setPhone(e.target.value)}
+          onChange={(e) => setPhone(e.target.value)}
         />
 
         <textarea
-          placeholder="Delivery address"
+          placeholder="Delivery Address"
           value={address}
-          onChange={e => setAddress(e.target.value)}
+          onChange={(e) => setAddress(e.target.value)}
         />
 
-        <button onClick={submitOrder} disabled={loading}>
+        <button
+          onClick={submitOrder}
+          disabled={loading}
+        >
           {loading ? "Processing..." : "Confirm Order"}
         </button>
 
-        <button onClick={close}>Cancel</button>
-
+        <button onClick={close}>
+          Cancel
+        </button>
       </div>
     </div>
   );
