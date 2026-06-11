@@ -275,22 +275,10 @@ if (isResetRoute) {
 
       {/* HEADER */}
       <header className="header">
-        <h2 
-          style={{ cursor: "pointer" }} 
-          onClick={() => {
-            setStartedShopping(false);
-            setPage("shop");
-          }}
-          title="Click to go home"
-        >
-          AfyAccess
-        </h2>
+        <h2>AfyAccess</h2>
 
         <div className="nav-buttons">
-          <button onClick={() => {
-            setStartedShopping(false);
-            setPage("shop");
-          }}>Home</button>
+          <button onClick={() => setPage("shop")}>Home</button>
 
           <button
             onClick={() => {
