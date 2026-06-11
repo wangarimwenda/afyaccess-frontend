@@ -84,27 +84,35 @@ export default function App() {
     }
   };
 
+  // ================= RESET PASSWORD CHECK =================
+  if (isResetRoute) {
+    return (
+      <div className="app" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
+        <ResetPasswordView resetToken={resetToken} />
+      </div>
+    );
+  }
+
   // ================= RESET PASSWORD VIEW =================
-  const ResetPasswordView = () => {
+  function ResetPasswordView({ resetToken }) {
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [message, setMessage] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const handleReset = async () => {
       if (!newPassword || !confirmPassword) {
-        setMessage("Please fill in both password fields");
+        alert("Please fill in both password fields");
         return;
       }
 
       if (newPassword !== confirmPassword) {
-        setMessage("Passwords do not match");
+        alert("Passwords do not match");
         return;
       }
 
       if (newPassword.length < 6) {
-        setMessage("Password must be at least 6 characters");
+        alert("Password must be at least 6 characters");
         return;
       }
 
@@ -123,59 +131,54 @@ export default function App() {
         );
 
         const data = await res.json();
-        setMessage(data.message);
-        
         if (res.ok) {
+          alert("Password reset successful! Redirecting to home...");
           setTimeout(() => {
             window.location.href = "/";
           }, 2000);
+        } else {
+          alert(data.message || "Error resetting password");
         }
       } catch (err) {
-        setMessage("Error resetting password");
+        alert("Error resetting password");
       }
       setLoading(false);
     };
 
-    if (isResetRoute) {
-      return (
-        <div className="app" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
-          <div className="modal-box">
-            <h2>Reset Your Password</h2>
-            
-            <div className="password-field">
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter new password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-              <span
-                className="eye-icon"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? "🙈" : "👁️"}
-              </span>
-            </div>
-
-            <div className="password-field">
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Confirm new password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </div>
-
-            {message && <p style={{ color: message.includes("success") ? "green" : "red", marginBottom: "10px" }}>{message}</p>}
-
-            <button onClick={handleReset} disabled={loading} style={{ marginTop: "10px" }}>
-              {loading ? "Updating..." : "Update Password"}
-            </button>
-          </div>
+    return (
+      <div className="modal-box">
+        <h2>Reset Your Password</h2>
+        
+        <div className="password-field">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Enter new password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+          <span
+            className="eye-icon"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? "🙈" : "👁️"}
+          </span>
         </div>
-      );
-    }
-  };
+
+        <div className="password-field">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Confirm new password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+        </div>
+
+        <button onClick={handleReset} disabled={loading} style={{ marginTop: "10px" }}>
+          {loading ? "Updating..." : "Update Password"}
+        </button>
+      </div>
+    );
+  }
 
   // ================= HOME =================
   const renderHome = () => (
