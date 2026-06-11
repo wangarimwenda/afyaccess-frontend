@@ -146,7 +146,7 @@ export default function App() {
     };
 
     return (
-      <div className="modal-box">
+      <form className="reset-password-form" onSubmit={(e) => { e.preventDefault(); handleReset(); }}>
         <h2>Reset Your Password</h2>
         
         <div className="password-field">
@@ -173,10 +173,10 @@ export default function App() {
           />
         </div>
 
-        <button onClick={handleReset} disabled={loading} style={{ marginTop: "10px" }}>
+        <button type="submit" disabled={loading} style={{ marginTop: "10px" }}>
           {loading ? "Updating..." : "Update Password"}
         </button>
-      </div>
+      </form>
     );
   }
 
@@ -352,7 +352,12 @@ export default function App() {
         <h2>AfyAccess</h2>
 
         <div className="nav-buttons">
-          <button onClick={() => setPage("shop")}>Home</button>
+          <button onClick={() => {
+            setStartedShopping(false);
+            setPage("shop");
+            setSearch("");
+            setTherapeuticFilter("All");
+          }}>Home</button>
 
           <button
             onClick={() => {
