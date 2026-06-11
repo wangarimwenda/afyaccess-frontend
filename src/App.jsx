@@ -87,7 +87,7 @@ export default function App() {
   // ================= RESET PASSWORD CHECK =================
   if (isResetRoute) {
     return (
-      <div className="app" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", background: "#f0f9ff" }}>
         <ResetPasswordView resetToken={resetToken} />
       </div>
     );
