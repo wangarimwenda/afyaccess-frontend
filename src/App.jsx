@@ -138,42 +138,43 @@ export default function App() {
 
     if (isResetRoute) {
       return (
-    <div className="app" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
-      <div className="modal-box">
-        <h2>Reset Your Password</h2>
-        
-        <div className="password-field">
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Enter new password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-          <span
-            className="eye-icon"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? "🙈" : "👁️"}
-          </span>
+        <div className="app" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
+          <div className="modal-box">
+            <h2>Reset Your Password</h2>
+            
+            <div className="password-field">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter new password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+              <span
+                className="eye-icon"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </span>
+            </div>
+
+            <div className="password-field">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Confirm new password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </div>
+
+            {message && <p style={{ color: message.includes("success") ? "green" : "red", marginBottom: "10px" }}>{message}</p>}
+
+            <button onClick={handleReset} disabled={loading} style={{ marginTop: "10px" }}>
+              {loading ? "Updating..." : "Update Password"}
+            </button>
+          </div>
         </div>
-
-        <div className="password-field">
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Confirm new password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-        </div>
-
-        {message && <p style={{ color: message.includes("success") ? "green" : "red", marginBottom: "10px" }}>{message}</p>}
-
-        <button onClick={handleReset} disabled={loading} style={{ marginTop: "10px" }}>
-          {loading ? "Updating..." : "Update Password"}
-        </button>
-      </div>
-    </div>
-  );
+      );
+    }
   };
 
   // ================= HOME =================
