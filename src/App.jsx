@@ -132,7 +132,7 @@ export default function App() {
 
         const data = await res.json();
         if (res.ok) {
-          alert("Password reset successful! Redirecting to home...");
+          alert("Password reset successful! Redirecting to AfyAccess...");
           setTimeout(() => {
             window.location.href = "/";
           }, 2000);
@@ -394,7 +394,9 @@ export default function App() {
               }
             }}
           >
-            {currentUser ? "Logout" : "Login"}
+            {currentUser 
+              ? `Logout (${currentUser.name ? currentUser.name.split(' ')[0] : currentUser.email.split('@')[0]})`
+              : "Login"}
           </button>
         </div>
       </header>
