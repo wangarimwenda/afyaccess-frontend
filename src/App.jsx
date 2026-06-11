@@ -27,6 +27,10 @@ export default function App() {
   const [showForgot, setShowForgot] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
 
+  const [adminPassword, setAdminPassword] = useState("");
+  const [showAdminPrompt, setShowAdminPrompt] = useState(false);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+
   // ================= RESET PASSWORD =================
   const path = window.location.pathname;
   const resetToken = path.split("/reset-password/")[1];
@@ -293,7 +297,14 @@ if (isResetRoute) {
             Cart ({cartCount})
           </button>
 
-          <button onClick={() => setPage("admin")}>
+          <button onClick={() => {
+            if (isAdminAuthenticated) {
+              setPage("admin");
+              setStartedShopping(true);
+            } else {
+              setShowAdminPrompt(true);
+            }
+          }}>
             Admin
           </button>
 
@@ -356,19 +367,69 @@ if (isResetRoute) {
         </div>
       )}
 
+      {showAdminPrompt && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <h2>Admin Access</h2>
+            <input
+              type="password"
+              placeholder="Enter admin password"
+              value={adminPassword}
+              onChange={(e) => setAdminPassword(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  if (adminPassword === "Admin@123") {
+                    setIsAdminAuthenticated(true);
+                    setPage("admin");
+                    setStartedShopping(true);
+                    setShowAdminPrompt(false);
+                    setAdminPassword("");
+                  } else {
+                    alert("Invalid password");
+                    setAdminPassword("");
+                  }
+                }
+              }}
+            />
+            <button onClick={() => {
+              if (adminPassword === "Admin@123") {
+                setIsAdminAuthenticated(true);
+                setPage("admin");
+                setStartedShopping(true);
+                setShowAdminPrompt(false);
+                setAdminPassword("");
+              } else {
+                alert("Invalid password");
+                setAdminPassword("");
+              }
+            }}>
+              Access Admin
+            </button>
+            <button onClick={() => {
+              setShowAdminPrompt(false);
+              setAdminPassword("");
+            }}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
       {showNotification && (
         <div className="cart-notification">
           {notificationText}
         </div>
       )}
 
-      {/* FOOTER */}
-      <footer className="footer">
-        <h3>AfyAccess Pharmacy</h3>
-        <p>© DrWangariMwenda</p>
-        <p>📞 0790787574</p>
-        <p>📍 Nanyuki, Kenya</p>
-      </footer>
+      {/* FOOTER - Only on home page */}
+      {!startedShopping && (
+        <footer className="footer">
+          <h3>AfyAccess Pharmacy</h3>
+          <p>© DrWangariMwenda</p>
+          <p>📞 0790787574</p>
+          <p>📍 Nanyuki, Kenya</p>
+        </footer>
+      )}
 
     </div>
   );
