@@ -174,41 +174,6 @@ export default function App() {
       </div>
     </div>
   );
-}
-      <div style={{ padding: "20px" }}>
-        <h2>Reset Password</h2>
-
-        <div className="password-field">
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Enter new password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-          <span
-            className="eye-icon"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? "🙈" : "👁️"}
-          </span>
-        </div>
-
-        <div className="password-field">
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Confirm new password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-        </div>
-
-        {message && <p style={{ color: message.includes("success") ? "green" : "red" }}>{message}</p>}
-
-        <button onClick={handleReset} disabled={loading}>
-          {loading ? "Updating..." : "Update Password"}
-        </button>
-      </div>
-    );
   };
 
   // ================= HOME =================
